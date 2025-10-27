@@ -5,8 +5,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('🏠 Trang chủ', style: TextStyle(fontSize: 24)),
+    return Container(
+      child: Row(
+        children: [
+          Center(
+            child: Text('qunhnv'),
+          )
+        ],
+      ),
     );
   }
 }

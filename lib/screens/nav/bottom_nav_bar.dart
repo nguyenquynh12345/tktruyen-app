@@ -25,13 +25,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     Icons.person_rounded,
   ];
 
-  final List<String> _labels = [
-    'Home',
-    'Search',
-    'Alerts',
-    'Profile',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -85,24 +78,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     children: [
                       Icon(
                         _icons[index],
-                        size: isSelected ? 28 : 26,
+                        size: isSelected ? 30 : 28,
                         color: isSelected
                             ? const Color(0xFFFFDF20)
                             : Colors.grey.shade600,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        _labels[index],
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                          color: isSelected
-                              ? const Color(0xFFFFDF20)
-                              : Colors.grey.shade600,
-                        ),
-                      ),
                     ],
                   ),
                 ),

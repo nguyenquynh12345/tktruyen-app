@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:heheheh/screens/home/home_screen.dart';
+import 'package:heheheh/screens/profile/profile_screen.dart';
 import 'package:heheheh/screens/nav/bottom_nav_bar.dart';
 
 class MainNavScreen extends StatefulWidget {
@@ -12,10 +14,8 @@ class _MainNavScreenState extends State<MainNavScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    Center(child: Text('🏠 Home Page', style: TextStyle(fontSize: 24))),
-    Center(child: Text('🔍 Search Page', style: TextStyle(fontSize: 24))),
-    Center(child: Text('🔔 Notifications', style: TextStyle(fontSize: 24))),
-    Center(child: Text('👤 Profile Page', style: TextStyle(fontSize: 24))),
+    HomeScreen(),
+    ProfileScreen(),
   ];
 
   void _onNavTap(int index) {

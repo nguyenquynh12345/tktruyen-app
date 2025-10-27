@@ -15,14 +15,15 @@ class _LoginScreenState extends State<LoginScreen> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Xin chào $_username 👋'),
-          backgroundColor: const Color(0xFFFFDF20),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      //
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Xin chào $_username 👋'),
+      //     backgroundColor: const Color(0xFFFFDF20),
+      //     behavior: SnackBarBehavior.floating,
+      //
+      //   ),
+      // );
 
       // ⏳ Delay một chút để thấy thông báo trước khi chuyển trang
       Future.delayed(const Duration(milliseconds: 800), () {
