@@ -14,8 +14,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFFDF20)),
         useMaterial3: true,
       ),
-      // Màn đầu tiên là login
-      initialRoute: '/login',
+      initialRoute: '/home',
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const MainNavScreen(),
