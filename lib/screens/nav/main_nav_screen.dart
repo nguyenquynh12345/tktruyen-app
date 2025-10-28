@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:heheheh/screens/home/home_screen.dart';
 import 'package:heheheh/screens/profile/profile_screen.dart';
-import 'package:heheheh/screens/nav/bottom_nav_bar.dart';
+import 'package:heheheh/screens/search/search_screen.dart';
+import 'bottom_nav_bar.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -11,14 +12,15 @@ class MainNavScreen extends StatefulWidget {
 }
 
 class _MainNavScreenState extends State<MainNavScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   final List<Widget> _pages = const [
     HomeScreenBody(),
+    SearchScreenWidget(),
     ProfileScreen(),
   ];
 
-  void _onNavTap(int index) {
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -27,14 +29,14 @@ class _MainNavScreenState extends State<MainNavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        child: _pages[_selectedIndex],
+      backgroundColor: Colors.black,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
       ),
       bottomNavigationBar: BottomNavBar(
-        initialIndex: _selectedIndex,
-        onTap: _onNavTap,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }

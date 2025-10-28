@@ -29,7 +29,7 @@ class BookCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              height: cardWidth*1.1, // tỉ lệ ảnh khoảng 1.2 của width
+              height: cardWidth*1.2, // tỉ lệ ảnh khoảng 1.2 của width
               decoration: BoxDecoration(
                 color: Colors.grey[800],
                 image: DecorationImage(

@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 
-class BottomNavBar extends StatefulWidget {
-  final int initialIndex;
-  final ValueChanged<int>? onTap;
+class BottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
   const BottomNavBar({
     super.key,
-    this.initialIndex = 1, // Default to Khám Phá (index 1)
-    this.onTap,
+    required this.currentIndex,
+    required this.onTap,
   });
 
-  @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
-}
-
-class _BottomNavBarState extends State<BottomNavBar> {
-  late int _selectedIndex;
-
-  final List<IconData> _icons = [
+  final List<IconData> _icons = const [
     Icons.grid_view_outlined,
     Icons.explore_outlined,
     Icons.search_outlined,
@@ -25,26 +18,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
     Icons.more_horiz_outlined,
   ];
 
-  final List<String> _labels = [
+  final List<String> _labels = const [
     'Tag',
     'Khám Phá',
     'Tìm Truyện',
     'Offline',
     'Menu',
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialIndex;
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    widget.onTap?.call(index);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +42,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(_icons.length, (index) {
-              final isSelected = _selectedIndex == index;
+              final isSelected = currentIndex == index;
               return GestureDetector(
-                onTap: () => _onItemTapped(index),
+                onTap: () => onTap(index),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -83,7 +63,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       style: TextStyle(
                         color: isSelected ? Colors.blue : Colors.grey[400],
                         fontSize: 10,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ],
