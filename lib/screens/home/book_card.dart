@@ -4,12 +4,16 @@ class BookCard extends StatelessWidget {
   final String imagePath;
   final String title;
   final String subtitle;
+  final Color backgroundColor;
+  final Color textColor;
 
   const BookCard({
     super.key,
     required this.imagePath,
     required this.title,
     this.subtitle = '',
+    required this.backgroundColor,
+    required this.textColor,
   });
 
   @override
@@ -31,7 +35,7 @@ class BookCard extends StatelessWidget {
             child: Container(
               height: cardWidth*1.2, // tỉ lệ ảnh khoảng 1.2 của width
               decoration: BoxDecoration(
-                color: Colors.grey[800],
+                color: backgroundColor, // Use dynamic background color
                 image: DecorationImage(
                   image: NetworkImage(effectiveImagePath),
                   fit: BoxFit.cover,
@@ -44,8 +48,8 @@ class BookCard extends StatelessWidget {
           // Tiêu đề
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: textColor, // Use dynamic text color
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),

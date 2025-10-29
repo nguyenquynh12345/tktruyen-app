@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Tags extends StatelessWidget {
-  const Tags({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const Tags({super.key, required this.backgroundColor, required this.textColor});
 
   final List<String> _labels = const [
     'TKTruyen',
     'Tiên hiệp',
     'Ngôn tình',
-    'Hài hước',
     'Hài hước',
     'Hài hước',
     'Hài hước',
@@ -31,10 +33,10 @@ class Tags extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[900],
+                  backgroundColor: backgroundColor.withOpacity(0.8),
                   shape: BeveledRectangleBorder(borderRadius: BorderRadius.zero),
                 ),
-                child: Text(first, style: const TextStyle(color: Colors.white)),
+                child: Text(first, style: TextStyle(color: textColor)),
               ),
             ),
             if ( second != null)...[
@@ -43,10 +45,10 @@ class Tags extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[900],
+                    backgroundColor: backgroundColor.withOpacity(0.8),
                     shape: BeveledRectangleBorder(borderRadius: BorderRadius.zero),
                   ),
-                  child: Text(second, style: const TextStyle(color: Colors.white)),
+                  child: Text(second, style: TextStyle(color: textColor)),
                 ),
               ),
           ],

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CompleteStoriesSection extends StatelessWidget {
-  const CompleteStoriesSection({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const CompleteStoriesSection({super.key, required this.backgroundColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Truyện Full - Hoàn',
           style: TextStyle(
-            color: Colors.amber,
+            color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -23,20 +26,20 @@ class CompleteStoriesSection extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[800],
-                  foregroundColor: Colors.amber,
+                  backgroundColor: backgroundColor.withOpacity(0.8),
+                  foregroundColor: textColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.book, size: 24),
-                    SizedBox(height: 8),
+                    Icon(Icons.book, size: 24, color: textColor),
+                    const SizedBox(height: 8),
                     Text(
                       'Full - Mới Cập Nhật',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -48,20 +51,20 @@ class CompleteStoriesSection extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[800],
-                  foregroundColor: Colors.amber,
+                  backgroundColor: backgroundColor.withOpacity(0.8),
+                  foregroundColor: textColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.star, size: 24),
-                    SizedBox(height: 8),
+                    Icon(Icons.star, size: 24, color: textColor),
+                    const SizedBox(height: 8),
                     Text(
                       'Full - Đánh Giá Cao',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -77,20 +80,20 @@ class CompleteStoriesSection extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[800],
-                  foregroundColor: Colors.amber,
+                  backgroundColor: backgroundColor.withOpacity(0.8),
+                  foregroundColor: textColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.heart_broken, size: 24),
-                    SizedBox(height: 8),
+                    Icon(Icons.heart_broken, size: 24, color: textColor),
+                    const SizedBox(height: 8),
                     Text(
                       'Full - Yêu thích',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -102,20 +105,20 @@ class CompleteStoriesSection extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[800],
-                  foregroundColor: Colors.amber,
+                  backgroundColor: backgroundColor.withOpacity(0.8),
+                  foregroundColor: textColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.more, size: 24),
-                    SizedBox(height: 8),
+                    Icon(Icons.more, size: 24, color: textColor),
+                    const SizedBox(height: 8),
                     Text(
                       'Full - Xem nhiều',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       textAlign: TextAlign.center,
                     ),
                   ],

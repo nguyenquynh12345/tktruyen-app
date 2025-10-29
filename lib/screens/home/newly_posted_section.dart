@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'book_card.dart';
 
 class NewlyPostedSection extends StatelessWidget {
-  const NewlyPostedSection({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const NewlyPostedSection({super.key, required this.backgroundColor, required this.textColor});
 
   final List<Map<String, String>> books = const [
     {'image': '', 'title': '[Zhihu] Phú Trọng...', 'subtitle': 'Phú Trọng Tr...'},
@@ -19,18 +22,18 @@ class NewlyPostedSection extends StatelessWidget {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
               'Mới đăng',
               style: TextStyle(
-                color: Colors.white,
+                color: textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               'Xem thêm ',
-              style: TextStyle(color: Colors.blue, fontSize: 14),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
             ),
           ],
         ),
@@ -47,6 +50,8 @@ class NewlyPostedSection extends StatelessWidget {
                   imagePath: books[index]['image'] ?? '',
                   title: books[index]['title'] ?? '',
                   subtitle: books[index]['subtitle'] ?? '',
+                  backgroundColor: backgroundColor,
+                  textColor: textColor,
                 ),
               );
             },

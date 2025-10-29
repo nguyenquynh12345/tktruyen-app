@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final Color backgroundColor;
+  final Color selectedItemColor;
+  final Color unselectedItemColor;
 
   const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.backgroundColor,
+    required this.selectedItemColor,
+    required this.unselectedItemColor,
   });
 
   final List<IconData> _icons = const [
@@ -33,10 +39,10 @@ class BottomNavBar extends StatelessWidget {
       top: false,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: backgroundColor,
           border: Border(
             top: BorderSide(
-              color: Colors.grey[800]!,
+              color: unselectedItemColor.withOpacity(0.5),
               width: 0.5,
             ),
           ),
@@ -55,13 +61,13 @@ class BottomNavBar extends StatelessWidget {
                     Icon(
                       _icons[index],
                       size: 24,
-                      color: isSelected ? Colors.blue : Colors.grey[400],
+                      color: isSelected ? selectedItemColor : unselectedItemColor,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _labels[index],
                       style: TextStyle(
-                        color: isSelected ? Colors.blue : Colors.grey[400],
+                        color: isSelected ? selectedItemColor : unselectedItemColor,
                         fontSize: 10,
                         fontWeight: isSelected
                             ? FontWeight.w600

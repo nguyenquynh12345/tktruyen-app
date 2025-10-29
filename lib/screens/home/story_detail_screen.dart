@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:heheheh/api/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:heheheh/theme_notifier.dart';
 import 'chapter_reader.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final int storyId;
-  final String storyTitle;
 
   const StoryDetailScreen({
     super.key,
     required this.storyId,
-    required this.storyTitle,
   });
 
   @override
@@ -23,13 +23,14 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
   int _currentPage = 1;
   List<Map<String, dynamic>> _chapters = [];
+  String _storyTitle = ''; // To store the fetched story title
 
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchChapters();
+    _fetchStoryDetailsAndChapters();
 
     // Lắng nghe khi scroll tới cuối danh sách để load thêm
     _scrollController.addListener(() {
@@ -42,8 +43,12 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     });
   }
 
-  Future<void> _fetchChapters() async {
+  Future<void> _fetchStoryDetailsAndChapters() async {
     try {
+      // Fetch story details to get the title
+      final storyDetails = await StoryService.getById(widget.storyId);
+      _storyTitle = storyDetails.storyName; // Assuming storyName is the title
+
       final List<dynamic> data = await StoryService.getListChapterById(widget.storyId, _currentPage);
 
       setState(() {
@@ -52,7 +57,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         _hasMore = data.isNotEmpty; // nếu rỗng -> hết dữ liệu
       });
     } catch (e) {
-      debugPrint('Lỗi tải danh sách chương: $e');
+      debugPrint('Lỗi tải chi tiết truyện hoặc danh sách chương: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -66,13 +71,16 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
       setState(() {
         if (moreData.isEmpty) {
           _hasMore = false;
-        } else {
+        }
+        else {
           _chapters.addAll(moreData.cast<Map<String, dynamic>>());
         }
       });
-    } catch (e) {
+    }
+    catch (e) {
       debugPrint('Lỗi load thêm chương: $e');
-    } finally {
+    }
+    finally {
       setState(() => _isLoadingMore = false);
     }
   }
@@ -85,73 +93,81 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title:
-        Text(widget.storyTitle, style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: _isLoading
-          ? const Center(
-        child: CircularProgressIndicator(color: Colors.white),
-      )
-          : _chapters.isEmpty
-          ? const Center(
-        child: Text('Không có chương nào',
-            style: TextStyle(color: Colors.white70)),
-      )
-          : RefreshIndicator(
-        color: Colors.blue,
-        backgroundColor: Colors.black,
-        onRefresh: () async {
-          _currentPage = 1;
-          _hasMore = true;
-          await _fetchChapters();
-        },
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount:
-          _chapters.length + (_isLoadingMore ? 1 : 0), // +1 cho loader
-          itemBuilder: (context, index) {
-            if (index >= _chapters.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                    child: CircularProgressIndicator(
-                        color: Colors.white)),
-              );
-            }
+    return Consumer<ThemeNotifier>(
+      builder: (context, themeNotifier, child) {
+        final backgroundColor = themeNotifier.backgroundColor;
+        final textColor = themeNotifier.textColor;
+        final appBarColor = themeNotifier.colorThemes.firstWhere((t) => t['background'] == backgroundColor)['appBar'] as Color? ?? Colors.blueAccent;
 
-            final chapter = _chapters[index];
-            final title =
-                chapter['title'] ?? 'Chương ${index + 1}';
-            final chapterNumber =
-                chapter['chapterNumber'] ?? index + 1;
+        return Scaffold(
+          backgroundColor: backgroundColor,
+          appBar: AppBar(
+            title:
+            Text(_storyTitle, style: TextStyle(color: textColor)),
+            backgroundColor: backgroundColor,
+            iconTheme: IconThemeData(color: textColor),
+          ),
+          body: _isLoading
+              ? Center(
+            child: CircularProgressIndicator(color: textColor),
+          )
+              : _chapters.isEmpty
+              ? Center(
+            child: Text('Không có chương nào',
+                style: TextStyle(color: textColor)),
+          )
+              : RefreshIndicator(
+            color: appBarColor,
+            backgroundColor: backgroundColor,
+            onRefresh: () async {
+              _currentPage = 1;
+              _hasMore = true;
+              await _fetchStoryDetailsAndChapters();
+            },
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount:
+              _chapters.length + (_isLoadingMore ? 1 : 0), // +1 cho loader
+              itemBuilder: (context, index) {
+                if (index >= _chapters.length) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: textColor)),
+                  );
+                }
 
-            return ListTile(
-              title: Text(title,
-                  style: const TextStyle(color: Colors.white)),
-              trailing: const Icon(Icons.chevron_right,
-                  color: Colors.white54),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChapterReader(
-                      storyId: widget.storyId,
-                      storyTitle: widget.storyTitle,
-                      chapterIndex: index, // Sử dụng index của list
-                      chapters: _chapters,
-                    ),
-                  ),
+                final chapter = _chapters[index];
+                final title =
+                    chapter['title'] ?? 'Chương ${index + 1}';
+                // final chapterNumber =
+                //     chapter['chapterNumber'] ?? index + 1;
+
+                return ListTile(
+                  title: Text(title,
+                      style: TextStyle(color: textColor)),
+                  trailing: Icon(Icons.chevron_right,
+                      color: textColor.withOpacity(0.7)),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/chapter_reader',
+                      arguments: {
+                        'storyId': widget.storyId,
+                        'storyTitle': _storyTitle,
+                        'chapterIndex': index,
+                        'chapters': _chapters,
+                      },
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
+

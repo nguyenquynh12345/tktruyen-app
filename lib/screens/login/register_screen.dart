@@ -4,18 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:heheheh/api/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  bool _agreeToTerms = false;
 
   Color _backgroundColor = const Color(0xFFF5F5F5);
   Color _textColor = Colors.black;
@@ -60,34 +62,40 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
+      if (!_agreeToTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Vui lòng đồng ý với điều khoản dịch vụ.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       setState(() {
         _isLoading = true;
       });
 
       try {
-        final response = await StoryService.login(
+        await StoryService.register(
           _emailController.text,
           _passwordController.text,
         );
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', response['access_token']);
-        await prefs.setString('user', jsonEncode(response['user']));
-
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Đăng nhập thành công!'),
+            content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
             backgroundColor: Colors.green,
           ),
         );
 
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pop(context); // Go back to login screen
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đăng nhập thất bại: $e'),
+            content: Text('Đăng ký thất bại: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -110,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: Icon(Icons.arrow_back, color: _textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Đăng nhập', style: TextStyle(color: _textColor)),
+        title: Text('Đăng ký', style: TextStyle(color: _textColor)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -123,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Chào mừng trở lại',
+                  'Tạo tài khoản mới',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _textColor),
                 ),
@@ -164,9 +172,55 @@ class _LoginScreenState extends State<LoginScreen> {
                   validator: (value) =>
                   value!.isEmpty ? 'Vui lòng nhập mật khẩu' : null,
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  style: TextStyle(color: _textColor),
+                  decoration: InputDecoration(
+                    labelText: 'Nhập lại mật khẩu',
+                    labelStyle: TextStyle(color: _textColor.withOpacity(0.7)),
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _textColor.withOpacity(0.5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _textColor),
+                    ),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Vui lòng nhập lại mật khẩu';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Mật khẩu không khớp';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _agreeToTerms,
+                      onChanged: (bool? newValue) {
+                        setState(() {
+                          _agreeToTerms = newValue!;
+                        });
+                      },
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Tôi đồng ý với điều khoản dịch vụ',
+                        style: TextStyle(color: _textColor.withOpacity(0.8)),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
+                  onPressed: _isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFDF20),
                     foregroundColor: Colors.black,
@@ -177,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator()
-                      : const Text('Đăng nhập'),
+                      : const Text('Đăng ký'),
                 ),
               ],
             ),

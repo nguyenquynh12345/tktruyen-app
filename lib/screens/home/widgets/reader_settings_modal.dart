@@ -13,7 +13,7 @@ void showReaderSettingsModal({
     context: context,
     isScrollControlled: true,
     builder: (context) {
-      return Container(
+      return SizedBox(
         height: MediaQuery.of(context).size.height * 0.5,
         child: StatefulBuilder(
           builder: (BuildContext context, StateSetter modalSetState) {

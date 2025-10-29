@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SectionTabs extends StatelessWidget {
-  const SectionTabs({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const SectionTabs({super.key, required this.backgroundColor, required this.textColor});
 
   final List<String> tabs = const [
     'Đang đọc',
@@ -22,15 +25,15 @@ class SectionTabs extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: isSelected ? Colors.blue : Colors.transparent,
-                foregroundColor: Colors.white,
+                backgroundColor: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                foregroundColor: textColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 side: BorderSide(
-                  color: isSelected ? Colors.transparent : Colors.grey[700]!,
+                  color: isSelected ? Colors.transparent : textColor.withOpacity(0.5),
                 ),
               ),
               child: Text(

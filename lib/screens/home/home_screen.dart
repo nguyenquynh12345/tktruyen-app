@@ -7,12 +7,15 @@ import 'latest_updated_section.dart';
 import 'complete_stories_section.dart';
 
 class HomeScreenBody extends StatelessWidget {
-  const HomeScreenBody({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const HomeScreenBody({super.key, required this.backgroundColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -22,46 +25,43 @@ class HomeScreenBody extends StatelessWidget {
                   // Header
                   Container(
                     padding: const EdgeInsets.only(top: 0, left: 16, right: 16),
-                    color: Colors.grey[900],
+                    color: backgroundColor,
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'TKTRUYEN',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: textColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
                               ),
                             ),
                             IconButton(
                               onPressed: () {},
-                              icon: const Icon(Icons.search, color: Colors.white),
+                              icon: Icon(Icons.search, color: textColor),
                             ),
                           ],
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: SectionTabs(),
-                        ),
+                        SectionTabs(backgroundColor: backgroundColor, textColor: textColor),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                      children: const [
-                        NewlyPostedSection(),
-                        SizedBox(height: 24),
-                        LatestUpdatedSection(),
-                        SizedBox(height: 24),
-                        CompleteStoriesSection(),
-                        SizedBox(height: 24),
-                        Discovery(),
-                        SizedBox(height: 24),
-                        Tags()
+                      children: [
+                        NewlyPostedSection(backgroundColor: backgroundColor, textColor: textColor),
+                        const SizedBox(height: 24),
+                        LatestUpdatedSection(backgroundColor: backgroundColor, textColor: textColor),
+                        const SizedBox(height: 24),
+                        CompleteStoriesSection(backgroundColor: backgroundColor, textColor: textColor),
+                        const SizedBox(height: 24),
+                        Discovery(backgroundColor: backgroundColor, textColor: textColor),
+                        const SizedBox(height: 24),
+                        Tags(backgroundColor: backgroundColor, textColor: textColor)
                       ],
                     ),
                   ),

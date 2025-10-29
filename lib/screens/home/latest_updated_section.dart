@@ -4,7 +4,10 @@ import 'package:heheheh/screens/home/story_detail_screen.dart';
 import 'book_card.dart';
 
 class LatestUpdatedSection extends StatefulWidget {
-  const LatestUpdatedSection({super.key});
+  final Color backgroundColor;
+  final Color textColor;
+
+  const LatestUpdatedSection({super.key, required this.backgroundColor, required this.textColor});
 
   @override
   State<LatestUpdatedSection> createState() => _LatestUpdatedSectionState();
@@ -34,14 +37,10 @@ class _LatestUpdatedSectionState extends State<LatestUpdatedSection> {
   }
 
   void _goToStoryDetail(BuildContext context, int storyId, String storyTitle) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => StoryDetailScreen(
-          storyId: storyId,
-          storyTitle: storyTitle,
-        ),
-      ),
+      '/story_detail',
+      arguments: {'storyId': storyId, 'storyTitle': storyTitle},
     );
   }
 
@@ -52,27 +51,27 @@ class _LatestUpdatedSectionState extends State<LatestUpdatedSection> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
               'Mới cập nhật nhất',
               style: TextStyle(
-                color: Colors.white,
+                color: widget.textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               'Xem thêm',
-              style: TextStyle(color: Colors.blue, fontSize: 14),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
             ),
           ],
         ),
         const SizedBox(height: 12),
 
         if (_isLoading)
-          const Center(child: CircularProgressIndicator())
+          Center(child: CircularProgressIndicator(color: widget.textColor,))
         else if (_latestChapters.isEmpty)
-          const Text('Không có dữ liệu', style: TextStyle(color: Colors.white))
+          Text('Không có dữ liệu', style: TextStyle(color: widget.textColor))
         else
           SizedBox(
             height: 180,
@@ -93,6 +92,8 @@ class _LatestUpdatedSectionState extends State<LatestUpdatedSection> {
                     child: BookCard(
                       imagePath: imageUrl,
                       title: title,
+                      backgroundColor: widget.backgroundColor,
+                      textColor: widget.textColor,
                     ),
                   ),
                 );

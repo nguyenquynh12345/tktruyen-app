@@ -166,4 +166,44 @@ class StoryService {
       throw Exception('Failed to load new chapters');
     }
   }
+
+  static Future<Map<String, dynamic>> login(String email, String password) async {
+    final url = Uri.parse('$baseUrl/auth/login');
+    final res = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return json.decode(res.body);
+    } else {
+      throw Exception('Failed to login');
+    }
+  }
+
+  static Future<Map<String, dynamic>> register(String email, String password) async {
+    final url = Uri.parse('$baseUrl/auth/register');
+    final res = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return json.decode(res.body);
+    } else {
+      throw Exception('Failed to register');
+    }
+  }
 }
