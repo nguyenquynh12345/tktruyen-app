@@ -6,11 +6,11 @@ import 'newly_posted_section.dart';
 import 'latest_updated_section.dart';
 import 'complete_stories_section.dart';
 
-class HomeScreenBody extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
 
-  const HomeScreenBody({super.key, required this.backgroundColor, required this.textColor});
+  const HomeScreen({super.key, required this.backgroundColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {

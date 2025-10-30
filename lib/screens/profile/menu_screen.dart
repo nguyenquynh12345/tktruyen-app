@@ -81,7 +81,9 @@ class _MenuScreenState extends State<MenuScreen> {
       children: [
         _buildProfileSection(),
         _buildSectionTitle('LỊCH SỬ TRÊN TÀI KHOẢN'),
-        _buildMenuItem(Icons.history, 'Truyện đã xem'),
+        _buildMenuItem(Icons.history, 'Truyện đã xem', onTap: () {
+          Navigator.pushNamed(context, '/viewed_stories');
+        }),
         _buildMenuItem(Icons.favorite_border, 'Truyện đã thích'),
         _buildMenuItem(Icons.download_outlined, 'Truyện đã tải'),
         _buildMenuItem(Icons.notifications_none, 'Truyện đã theo dõi'),

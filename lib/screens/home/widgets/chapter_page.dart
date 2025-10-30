@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:heheheh/api/api_service.dart';
 
+import '../../../models/chapter.dart';
+
 class ChapterPage extends StatefulWidget {
   final int storyId;
   final String storyTitle;
@@ -27,7 +29,7 @@ class ChapterPage extends StatefulWidget {
 }
 
 class _ChapterPageState extends State<ChapterPage> {
-  late Future<ChapterResponse> _chapterFuture;
+  late Future<Chapter> _chapterFuture;
 
   @override
   void initState() {
@@ -44,7 +46,7 @@ class _ChapterPageState extends State<ChapterPage> {
   Widget build(BuildContext context) {
     final title = widget.chapter['title'] as String? ?? 'Chapter';
 
-    return FutureBuilder<ChapterResponse>(
+    return FutureBuilder<Chapter>(
       future: _chapterFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

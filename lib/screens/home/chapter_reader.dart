@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:heheheh/screens/home/widgets/chapter_page.dart';
-import 'package:heheheh/screens/home/widgets/reader_controls_overlay.dart';
-import 'package:heheheh/screens/home/widgets/reader_settings_modal.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:heheheh/api/api_service.dart';
+import 'package:heheheh/models/chapter.dart';
 import 'package:heheheh/theme_notifier.dart';
+import 'package:provider/provider.dart';
 
 class ChapterReader extends StatefulWidget {
   final int storyId;
@@ -25,89 +25,162 @@ class ChapterReader extends StatefulWidget {
 
 class _ChapterReaderState extends State<ChapterReader> {
   late PageController _pageController;
-  bool _showControls = false;
+  late int _currentChapterIndex;
+  bool _isUIHidden = false;
+  final Map<int, Future<Chapter>> _chapterFutures = {};
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.chapterIndex);
+    _currentChapterIndex = widget.chapterIndex;
+    _pageController = PageController(initialPage: _currentChapterIndex);
   }
 
-  void _onFontSizeChanged(ThemeNotifier themeNotifier, double newSize) {
-    themeNotifier.updateFontSize(newSize);
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
-  void _onColorChanged(ThemeNotifier themeNotifier, Color newBackgroundColor, Color newTextColor) {
-    final themeName = themeNotifier.colorThemes.firstWhere((t) => t['background'] == newBackgroundColor)['name'];
-    themeNotifier.updateTheme(themeName);
+  Future<Chapter> _getChapterFuture(int index) {
+    if (!_chapterFutures.containsKey(index)) {
+      _chapterFutures[index] = StoryService.getChapterById(
+        widget.storyId,
+        widget.chapters[index]['chapterNumber'],
+      );
+    }
+    return _chapterFutures[index]!;
+  }
+
+  void _toggleUI() {
+    setState(() {
+      _isUIHidden = !_isUIHidden;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeNotifier>(
-      builder: (context, themeNotifier, child) {
-        final fontSize = themeNotifier.fontSize;
-        final backgroundColor = themeNotifier.backgroundColor;
-        final textColor = themeNotifier.textColor;
-        final currentTheme = themeNotifier.colorThemes.firstWhere((theme) => theme['background'] == backgroundColor, orElse: () => themeNotifier.colorThemes.first);
-        final appBarColor = currentTheme['appBar'] as Color? ?? Colors.blueAccent;
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final backgroundColor = themeNotifier.backgroundColor;
+    final textColor = themeNotifier.textColor;
+    final appBarColor = themeNotifier.colorThemes.firstWhere((t) => t['background'] == backgroundColor)['appBar'] as Color? ?? Colors.blueAccent;
 
-        return Scaffold(
-          backgroundColor: backgroundColor,
-          body: GestureDetector(
-            onTap: () {
-              setState(() {
-                _showControls = !_showControls;
-              });
-            },
-            child: Stack(
-              children: [
-                NotificationListener<ScrollNotification>(
-                  onNotification: (notification) {
-                    if (notification is ScrollStartNotification && _showControls) {
-                      setState(() {
-                        _showControls = false;
-                      });
-                    }
-                    return false;
-                  },
-                  child: PageView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    controller: _pageController,
-                    itemCount: widget.chapters.length,
-                    itemBuilder: (context, index) {
-                      return ChapterPage(
-                        storyId: widget.storyId,
-                        storyTitle: widget.storyTitle,
-                        chapter: widget.chapters[index],
-                        fontSize: fontSize,
-                        backgroundColor: backgroundColor,
-                        textColor: textColor,
-                        appBarColor: appBarColor,
-                      );
-                    },
-                  ),
-                ),
-                if (_showControls)
-                  ReaderControlsOverlay(
-                    onBack: () => Navigator.of(context).pop(),
-                    onSettings: () {
-                      showReaderSettingsModal(
-                        context: context,
-                        initialFontSize: fontSize,
-                        initialBackgroundColor: backgroundColor,
-                        initialTextColor: textColor,
-                        colorThemes: themeNotifier.colorThemes,
-                        onFontSizeChanged: (newSize) => _onFontSizeChanged(themeNotifier, newSize),
-                        onColorChanged: (newBg, newText) => _onColorChanged(themeNotifier, newBg, newText),
-                      );
-                    },
-                  ),
-              ],
-            ),
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
+      extendBody: true, // Allow body to extend behind BottomAppBar
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight), // Standard AppBar height
+        child: AnimatedOpacity(
+          opacity: _isUIHidden ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 200),
+          child: AppBar(
+            title: Text(widget.storyTitle, style: TextStyle(color: textColor)),
+            backgroundColor: Colors.transparent, // Make AppBar transparent
+            elevation: 0, // Remove AppBar shadow
+            iconTheme: IconThemeData(color: textColor), // Ensure back button is visible
+            foregroundColor: textColor, // Ensure title and actions are visible
+            actions: [
+              IconButton(
+                icon: Icon(Icons.settings, color: textColor),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/settings');
+                },
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
+      body: GestureDetector(
+        onTap: _toggleUI,
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: widget.chapters.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentChapterIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return FutureBuilder<Chapter>(
+              future: _getChapterFuture(index),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator(color: textColor));
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Lỗi tải nội dung chương', style: TextStyle(color: textColor)));
+                }
+                if (!snapshot.hasData) {
+                  return Center(child: Text('Không có dữ liệu', style: TextStyle(color: textColor)));
+                }
+
+                final chapter = snapshot.data!;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Html(
+                          data: chapter.content,
+                          style: {
+                            "body": Style(
+                              color: textColor,
+                              fontSize: FontSize(16),
+                            ),
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: AnimatedOpacity(
+        opacity: _isUIHidden ? 0.0 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: BottomAppBar(
+          color: backgroundColor.withOpacity(0.2), // Make BottomAppBar semi-transparent
+          elevation: 0, // Remove BottomAppBar shadow
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: textColor,
+                onPressed: _currentChapterIndex > 0
+                    ? () => _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeIn,
+                        )
+                    : null,
+              ),
+              Expanded(
+                child: Text(
+                  widget.chapters[_currentChapterIndex]['title'] ?? 'Chương ${_currentChapterIndex + 1}',
+                  style: TextStyle(color: textColor),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.arrow_forward),
+                color: textColor,
+                onPressed: _currentChapterIndex < widget.chapters.length - 1
+                    ? () => _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeIn,
+                        )
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:heheheh/screens/favorites/favorite_screen.dart';
 import 'package:heheheh/screens/home/home_screen.dart';
 import 'package:heheheh/screens/profile/menu_screen.dart';
 import 'package:heheheh/screens/search/search_screen.dart';
+import 'package:heheheh/screens/settings/settings_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:heheheh/theme_notifier.dart';
-import 'bottom_nav_bar.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -14,45 +15,7 @@ class MainNavScreen extends StatefulWidget {
 }
 
 class _MainNavScreenState extends State<MainNavScreen> {
-  int _selectedIndex = 1;
-
-  final List<String> _pageTitles = const [
-    'Tag',
-    'Khám Phá',
-    'Tìm Truyện',
-    'Offline',
-    'Menu',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Widget _buildPageScaffold(int index, Widget body, Color backgroundColor, Color textColor) {
-    return Scaffold(
-      key: ValueKey('page_${index}_${backgroundColor.value}_${textColor.value}'),
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(_pageTitles[index], style: TextStyle(color: textColor)),
-        backgroundColor: backgroundColor,
-        iconTheme: IconThemeData(color: textColor),
-      ),
-      body: Theme(
-        data: Theme.of(context).copyWith(
-          textTheme: Theme.of(context).textTheme.apply(bodyColor: textColor, displayColor: textColor),
-          iconTheme: IconThemeData(color: textColor),
-        ),
-        child: body,
-      ),
-    );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -60,32 +23,51 @@ class _MainNavScreenState extends State<MainNavScreen> {
       builder: (context, themeNotifier, child) {
         final backgroundColor = themeNotifier.backgroundColor;
         final textColor = themeNotifier.textColor;
-        final appBarColor = themeNotifier.colorThemes.firstWhere((t) => t['background'] == backgroundColor)['appBar'] as Color? ?? Colors.blue;
+        final unselectedColor = textColor.withOpacity(0.7);
 
-        final List<Widget> _pages = [
-          _buildPageScaffold(0, SearchScreenWidget(backgroundColor: backgroundColor, textColor: textColor), backgroundColor, textColor),
-          _buildPageScaffold(1, HomeScreenBody(backgroundColor: backgroundColor, textColor: textColor), backgroundColor, textColor),
-          _buildPageScaffold(2, Center(
-            child: Text('Tìm Truyện', style: TextStyle(color: textColor)),
-          ), backgroundColor, textColor),
-          _buildPageScaffold(3, Center(
-            child: Text('Offline', style: TextStyle(color: textColor)),
-          ), backgroundColor, textColor),
-          MenuScreen(backgroundColor: backgroundColor, textColor: textColor),
-        ];
+        List<Widget> getPages() {
+          return [
+            HomeScreen(backgroundColor: backgroundColor, textColor: textColor),
+            SearchScreen(backgroundColor: backgroundColor, textColor: textColor),
+            const FavoriteScreen(),
+            MenuScreen(backgroundColor: backgroundColor, textColor: textColor),
+          ];
+        }
 
         return Scaffold(
-          backgroundColor: backgroundColor,
           body: IndexedStack(
-            index: _selectedIndex,
-            children: _pages,
+            index: _currentIndex,
+            children: getPages(),
           ),
-          bottomNavigationBar: BottomNavBar(
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) => setState(() => _currentIndex = index),
             backgroundColor: backgroundColor,
-            selectedItemColor: appBarColor,
-            unselectedItemColor: textColor.withOpacity(0.7),
+            selectedItemColor: const Color(0xFFFFDF20),
+            unselectedItemColor: unselectedColor,
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Trang chủ',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search_outlined),
+                activeIcon: Icon(Icons.search),
+                label: 'Tìm kiếm',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book_outlined),
+                activeIcon: Icon(Icons.book),
+                label: 'Tủ sách',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Cá nhân',
+              ),
+            ],
           ),
         );
       },
